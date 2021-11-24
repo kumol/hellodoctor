@@ -33,7 +33,7 @@ app.listen(port,(err)=>{
 });
 
 app.get("/",(req,res)=>{
-    res.send("hello ")
+    res.send("Eello Everyone")
 })
 app.use(express.json())
 app.use(cors());
