@@ -1,6 +1,6 @@
 let config = require('./config/config.json');
-require('./models/db');
 require('dotenv').config();
+require('./models/db');
 const express = require("express");
 const app = express();
 const Sentry = require("@sentry/node");
