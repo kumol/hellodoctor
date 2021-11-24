@@ -1,7 +1,20 @@
 let config = require('./config/config.json');
 require('./models/db');
+require('dotenv').config();
 const express = require("express");
 const app = express();
+const Sentry = require("@sentry/node");
+const Tracing = require("@sentry/tracing");
+Sentry.init({ dsn: process.env.SENTRY_DSN, integrations: [
+  new Sentry.Integrations.Http({ tracing: true }),
+  new Tracing.Integrations.Express({
+    app,
+  })
+],tracesSampleRate: 1.0,});
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
+app.use(Sentry.Handlers.errorHandler());
+console.log(process.env.SENTRY_DSN)
 const cors = require("cors");
 var bodyParser = require('body-parser');
 let userRouter = require("./api/user");

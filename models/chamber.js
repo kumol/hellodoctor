@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 let chamberSchema = mongoose.Schema({
     name: { type: String },
-    organization_Id: { type: Number },
+    organizationId: { type: Number },
     details: { type: String },
     accountType: { type: Number },
     contactNumber: { type: String },
@@ -15,7 +15,8 @@ let chamberSchema = mongoose.Schema({
         type: {
           type: String, // Don't do `{ location: { type: String } }`
           enum: ['Point'], // 'location.type' must be 'Point'
-          required: true
+          required: true,
+          default: 'Point'
         },
         coordinates: {
           type: [Number],
