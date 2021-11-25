@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const doctorSchema = mongoose.Schema({
-    name: { type: String },
-    bname: { type: String },
+    firstName: { type: String },
+    lastName: {type: String},
+    fullName: { type: String },
     id: { type: String },
     address: { type: String },
     college: { type: String },
