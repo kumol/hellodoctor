@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 let organizationSchema = mongoose.Schema({
     name: { type: String },
-    organization_Id: { type: Number },
+    id: { type: Number },
     details: { type: String },
     accountType: { type: Number },
     contactNumber: { type: String },
@@ -21,14 +21,14 @@ let organizationSchema = mongoose.Schema({
           required: true
         }
     },
-    town: { type: mongoose.Schema.Types.ObjectId, ref: "Town" },
-    city: { type: mongoose.Schema.Types.ObjectId, ref: "City" },
+    town: String,
+    city: String,
     logo: { type: String },
-    appointment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" }],
+    appointment: [{ type: String }],
     startTime:Date,
     endTime:Date,
-    doctor: [{ ref: "Doctor", type: mongoose.Schema.Types.ObjectId }],
-    chamber: [{ type: mongoose.Schema.Types.ObjectId , ref: "Chamber"}]
+    doctor: [{ type: String }],
+    chamber: [{ type: String }]
 });
 
 module.exports = mongoose.model("Organization", organizationSchema);

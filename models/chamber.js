@@ -11,10 +11,10 @@ let chamberSchema = mongoose.Schema({
     endTime: Date,
     numberOfAppointment: Number,
     maxAppointment: Number,
-    town: { type: mongoose.Schema.Types.ObjectId, ref: "Town" },
-    city: { type: mongoose.Schema.Types.ObjectId, ref: "City" },
-    appointment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" }],
-    doctor: { ref: "Doctor", type: mongoose.Schema.Types.ObjectId },
+    town: { type: String },
+    city: { type: String },
+    appointment: [{ type: String }],
+    doctor: String,
 });
 
 module.exports = mongoose.model("Chamber", chamberSchema);

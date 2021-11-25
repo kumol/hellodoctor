@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-let divisionSchema = mongoose.Schema({
+let citySchema = mongoose.Schema({
     name: String
 });
 
-module.exports = mongoose.model("Division", divisionSchema);
+module.exports = mongoose.model("City", citySchema);

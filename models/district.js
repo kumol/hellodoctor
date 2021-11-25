@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 let districtSchema = mongoose.Schema({
     name: String,
-    division: {type: mongoose.Schema.Types.ObjectId, ref:"Division"}
+    city: {type: String}
 });
 
-module.exports = mongoose.model("District", districtSchema);
+module.exports = mongoose.model("Town", districtSchema);

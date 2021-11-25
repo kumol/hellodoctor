@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const doctorSchema = mongoose.Schema({
-        name: { type: String },
+    name: { type: String },
     bname: { type: String },
-    doctorId: { type: String },
+    id: { type: String },
     address: { type: String },
     college: { type: String },
     email: { type: String },
@@ -16,7 +16,7 @@ const doctorSchema = mongoose.Schema({
             topic: String,
         }
     ],
-    chamber: [{type: mongoose.Schema.Types.ObjectId, ref: "Chamber"}],
+    chamber: [{type: String}],
     image: { type: String },
     details: { type: String },
     experience:[
