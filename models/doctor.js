@@ -16,15 +16,7 @@ const doctorSchema = mongoose.Schema({
             topic: String,
         }
     ],
-    chamber: [{ 
-        startDay: String,
-        endDay: String,
-        dayRange: [{ type: String }],
-        timeRange: String,
-        chamberId: {type: mongoose.Schema.Types.ObjectId, ref: "Chamber"},
-        numberOfAppointment: Number,
-        appointment: [{type: mongoose.Schema.Types.ObjectId, ref: "Appointment"}]
-    }],
+    chamber: [{type: mongoose.Schema.Types.ObjectId, ref: "Chamber"}],
     image: { type: String },
     details: { type: String },
     experience:[
