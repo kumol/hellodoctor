@@ -1,34 +1,20 @@
 const mongoose = require("mongoose");
 
 let chamberSchema = mongoose.Schema({
-    name: { type: String },
-    organizationId: { type: Number },
+    title: { type: String },
+    organizationId: { type: String },
     details: { type: String },
-    accountType: { type: Number },
-    contactNumber: { type: String },
-    email: { type: String },
-    website: { type: String },
-    address: { type: String },
-    district: { type: mongoose.Schema.Types.ObjectId, ref: "District" },
-    division: { type: mongoose.Schema.Types.ObjectId, ref: "Division" },
-    location: {
-        type: {
-          type: String, // Don't do `{ location: { type: String } }`
-          enum: ['Point'], // 'location.type' must be 'Point'
-          required: true,
-          default: 'Point'
-        },
-        coordinates: {
-          type: [Number],
-          required: true
-        }
-    },
-    logo: { type: String },
+    startDay: String,
+    endDay: String,
+    dayRange: [{ type: String }],
+    startTime: Date,
+    endTime: Date,
+    numberOfAppointment: Number,
+    maxAppointment: Number,
+    town: { type: mongoose.Schema.Types.ObjectId, ref: "Town" },
+    city: { type: mongoose.Schema.Types.ObjectId, ref: "City" },
     appointment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" }],
-    startTime:Date,
-    endTime:Date,
-    totalPatient:Number,
-    doctor: { ref: "Doctor", type: mongoose.Schema.Types.ObjectId }
+    doctor: { ref: "Doctor", type: mongoose.Schema.Types.ObjectId },
 });
 
 module.exports = mongoose.model("Chamber", chamberSchema);
