@@ -1,6 +1,7 @@
 var express = require("express");
 const { ErrorResponse, Ok } = require("../helpers/httpResponse");
 const Doctor = require("../models/doctor");
+const chamberController = require("./controller/chamberController");
 const doctorsHelper = require("./controller/doctorController");
 var router = express.Router();
 
@@ -50,4 +51,6 @@ router.delete("/delete/:id", async(req,res,next)=>{
 
 router.get("/organization/:id",doctorsHelper.getDoctorByOrganizationId);
 
+router.post("/chamber/", chamberController.addNewChamber);
+router.get("/chamber/", )
 module.exports = router;
