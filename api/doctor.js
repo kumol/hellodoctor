@@ -40,6 +40,35 @@ router.post("/save", async(req,res,next)=>{
 
 router.get("/single/:id",doctorsHelper.getDoctorById);
 
+router.put("/update/:id", async(req,res,next)=>{ 
+    try{
+        let {degree, experience, chamber, isDegreeUpdate, isExperienceUpdate, isDegreeRemove, isExperienceRemove, isChamberRemove, degreeId, experienceId, ...restData} = req.body;
+        let query = {}, updateQuery = {}, pullObj = {}, pushObj = {};
+        query.id = req.params.id;
+        degreeId && isDegreeUpdate && !isExperienceUpdate ? query["degrees"] = {$elemMatch: {"_id": degreeId}} : null;
+        experienceId && isExperienceUpdate && !isDegreeUpdate ? query["experience"] = {$elemMatch: {_id: experienceId}} : null;
+        // Generating $set, $pull, $push query
+        chamber ? isChamberRemove ? pullObj["chamber"] = chamber : pushObj["chamber"] = chamber : null;
+        degree ? isDegreeRemove && degreeId ? pullObj["degrees"] = {"_id": degreeId} : !degreeId && !isDegreeRemove ? pushObj["degrees"] = degree : null : null;
+        experience ? isExperienceRemove && experienceId ? pullObj["experience"] = {"_id": experienceId} : !experienceId && !isExperienceRemove ? pushObj["experience"] = experience : null : null;
+        updateQuery["$pull"] = pullObj,
+        updateQuery["$push"] = pushObj
+        isDegreeUpdate && degreeId && degree ? Object.entries(degree).map(([k,v])=>{
+            data[`degrees.$.${k}`] = v;
+        }): null;
+        isExperienceUpdate && experienceId && experience ? Object.entries(experience).map(([k,v])=>{
+            data[`experience.$.${k}`] = v;
+        }): null;
+        updateQuery["$set"] = data;
+
+        let modified = await DeliveryShift.updateOne(query, updateQuery),
+            updatedObj = modified.n ? await DeliveryShift.findOne(query, {_id: 0}).lean() : {};
+      return modified.n ? modified.nModified ? ok(res, "Successfully Updated", updatedObj) : notModified(res, "Not modified", {}) : notFound(res, "No Record Found", {});
+    }catch(error){
+        return ErrorResponse(res, error.message, error);
+    }
+})
+
 router.delete("/delete/:id", async(req,res,next)=>{
     try{
         let deleteOne = await Doctor.deleteOne({_id:req.params.id})
@@ -53,4 +82,32 @@ router.get("/organization/:id",doctorsHelper.getDoctorByOrganizationId);
 
 router.post("/chamber/", chamberController.addNewChamber);
 router.get("/chamber/", )
+module.exports = router;
+router.post("/organization/chamber/", async(req,res,next)=>{
+    try{
+        let newChamber = {...req.body};
+        let dayRange = [];
+        if (start <= end) {
+            for (; start <= end; start++) {
+            dayRange.push(days[start].name);
+            }
+        } else {
+            for (; start <= 6; start++) {
+            dayRange.push(days[start].name);
+            }
+            for (i = 0; i <= end; i++) {
+            dayRange.push(days[i].name);
+            }
+        }
+        
+        newChamber.appointment = newChamber.appointment ? newChamber.appointment.length ? newChamber.appointment : [newChamber.appointment] : [];
+        newChamber.dayRange = newChamber.dayRange ? newChamber.dayRange.length ? newChamber.dayRange : [newChamber.dayRange] : [];
+        let chamber = new Chamber(newChamber);
+        chamber.id = chamber._id;
+        chamber = await Doctor.create(chamber);
+        return ok(res, "Successfully Saved", newChamber);
+    }catch(error){
+      return responseError(res, error.message , {"err": error});
+    }
+})
 module.exports = router;
