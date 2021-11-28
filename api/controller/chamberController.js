@@ -52,7 +52,7 @@ module.exports = {
             updateQuery["$set"] = updateObj;
 
             let modified = await Chamber.updateOne({id: req.params.id}, updateQuery),
-                updatedObj = modified.n ? await Chamber.findOne(id: req.params.id, {_id: 0}).lean() : {};
+                updatedObj = modified.n ? await Chamber.findOne({id: req.params.id}, {_id: 0}).lean() : {};
             return modified.n ? modified.nModified ? ok(res, "Successfully Updated", updatedObj) : notModified(res, "Not modified", {}) : notFound(res, "No Record Found", {});
         }catch(error){
             ErrorResponse(res, "Internal server error", {"message": error.message});
