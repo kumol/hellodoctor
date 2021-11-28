@@ -83,5 +83,6 @@ router.get("/organization/:id",doctorsHelper.getDoctorByOrganizationId);
 router.post("/chamber/", chamberController.addNewChamber);
 router.get("/chamber/", )
 module.exports = router;
-router.post("/organization/chamber/", chamberController.addNewChamber)
+router.post("/organization/chamber/", chamberController.addNewChamber);
+router.put("/organization/chamber/:id", chamberController.updateChamber)
 module.exports = router;
