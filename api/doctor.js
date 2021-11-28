@@ -84,5 +84,6 @@ router.post("/chamber/", chamberController.addNewChamber);
 router.get("/chamber/", )
 module.exports = router;
 router.post("/organization/chamber/", chamberController.addNewChamber);
-router.put("/organization/chamber/:id", chamberController.updateChamber)
+router.put("/organization/chamber/:id", chamberController.updateChamber);
+router.delete("/organization/chamber/:id", chamberController.deleteChamber);
 module.exports = router;
