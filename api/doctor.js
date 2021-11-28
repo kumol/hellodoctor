@@ -61,8 +61,8 @@ router.put("/update/:id", async(req,res,next)=>{
         }): null;
         updateQuery["$set"] = data;
 
-        let modified = await DeliveryShift.updateOne(query, updateQuery),
-            updatedObj = modified.n ? await DeliveryShift.findOne(query, {_id: 0}).lean() : {};
+        let modified = await Doctor.updateOne(query, updateQuery),
+            updatedObj = modified.n ? await Doctor.findOne(query, {_id: 0}).lean() : {};
       return modified.n ? modified.nModified ? ok(res, "Successfully Updated", updatedObj) : notModified(res, "Not modified", {}) : notFound(res, "No Record Found", {});
     }catch(error){
         return ErrorResponse(res, error.message, error);

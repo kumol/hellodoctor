@@ -1,11 +1,11 @@
-const { ErrorResponse, Ok } = require("../../helpers/httpResponse")
+const { ErrorResponse, Ok } = require("../../helpers/httpResponse");
+const Chamber = require("../../models/chamber");
 
 module.exports = {
     addNewChamber: async(req,res,next)=>{
         try{
-            let chamber = {...req.body};
-            
-            let {startDay, endDay, ...newChamber} = chamber;
+            let data = {...req.body};
+            let {startDay, endDay, ...newChamber} = data;
             if(startDay && endDay){
                 newChamber.startDay = startDay;
                 newChamber.endDay = endDay;
@@ -15,8 +15,6 @@ module.exports = {
                 newChamber.endDay = 6;
                 newChamber.dayRange = await generateDayRange(0, 6);
             }
-            
-            
             newChamber.appointment = newChamber.appointment ? newChamber.appointment.length ? newChamber.appointment : [newChamber.appointment] : [];
             newChamber.dayRange = newChamber.dayRange ? newChamber.dayRange.length ? newChamber.dayRange : [newChamber.dayRange] : [];
             let chamber = new Chamber(newChamber);
@@ -24,7 +22,7 @@ module.exports = {
             chamber = await Doctor.create(chamber);
             return Ok(res, "Successfully Saved", newChamber);
         }catch(error){
-          return ErrorResponse(res, error.message , {"err": error});
+          return ErrorResponse(res, error.message , {"error": error});
         }
     },
     getChamber: async(req,res)=>{
@@ -36,6 +34,28 @@ module.exports = {
             Ok(res, "Successfully Saved", chamber)
         }catch(error){
             ErrorResponse(res, "Internal server error", error.message);
+        }
+    },
+
+    updateChamber: async(re,res)=>{
+        try{
+            let {startDay, endDay, appointment, addAppointment, ...updateObj} = req.body;
+            if(startDay && endDay){
+                updateObj.startDay = startDay;
+                updateObj.endDay = endDay;
+                updateObj.dayRange = await generateDayRange(startDay, endDay);
+            }
+            let pushObj = {}, pullObj= {}, updateQuery = {};
+            addAppointment ? appointment ? pushObj["appointment"] : pullObj["appointment"] : null;
+            updateQuery["$push"] = pushObj;
+            updateQuery["$pull"] = pullObj;
+            updateQuery["$set"] = updateObj;
+
+            let modified = await Chamber.updateOne(query, updateQuery),
+                updatedObj = modified.n ? await Chamber.findOne(query, {_id: 0}).lean() : {};
+            return modified.n ? modified.nModified ? ok(res, "Successfully Updated", updatedObj) : notModified(res, "Not modified", {}) : notFound(res, "No Record Found", {});
+        }catch(error){
+            ErrorResponse(res, "Internal server error", {"message": error.message});
         }
     }
 }
