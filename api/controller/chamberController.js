@@ -1,12 +1,30 @@
 const { ErrorResponse, Ok } = require("../../helpers/httpResponse")
 
 module.exports = {
-    addNewChamber: async(req,res) => {
+    addNewChamber: async(req,res,next)=>{
         try{
-            let chamber ;
-            Ok(res, "Successfully Saved", chamber)
+            let chamber = {...req.body};
+            
+            let {startDay, endDay, ...newChamber} = chamber;
+            if(startDay && endDay){
+                newChamber.startDay = startDay;
+                newChamber.endDay = endDay;
+                newChamber.dayRange = await generateDayRange(startDay, endDay);
+            }else{
+                newChamber.startDay = 0;
+                newChamber.endDay = 6;
+                newChamber.dayRange = await generateDayRange(0, 6);
+            }
+            
+            
+            newChamber.appointment = newChamber.appointment ? newChamber.appointment.length ? newChamber.appointment : [newChamber.appointment] : [];
+            newChamber.dayRange = newChamber.dayRange ? newChamber.dayRange.length ? newChamber.dayRange : [newChamber.dayRange] : [];
+            let chamber = new Chamber(newChamber);
+            chamber.id = chamber._id;
+            chamber = await Doctor.create(chamber);
+            return Ok(res, "Successfully Saved", newChamber);
         }catch(error){
-            ErrorResponse(res, "Internal server error", error.message);
+          return ErrorResponse(res, error.message , {"err": error});
         }
     },
     getChamber: async(req,res)=>{
@@ -20,5 +38,20 @@ module.exports = {
             ErrorResponse(res, "Internal server error", error.message);
         }
     }
-    
 }
+
+const generateDayRange = async (start,end)=>{
+    let dayRange = [];
+    if (start <= end) {
+        for (; start <= end; start++) {
+            dayRange.push(days[start].name);
+        }
+    } else {
+        for (; start <= 6; start++) {
+            dayRange.push(days[start].name);
+        }
+        for (i = 0; i <= end; i++) {
+            dayRange.push(days[i].name);
+        }
+    }
+} 

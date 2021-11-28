@@ -83,31 +83,5 @@ router.get("/organization/:id",doctorsHelper.getDoctorByOrganizationId);
 router.post("/chamber/", chamberController.addNewChamber);
 router.get("/chamber/", )
 module.exports = router;
-router.post("/organization/chamber/", async(req,res,next)=>{
-    try{
-        let newChamber = {...req.body};
-        let dayRange = [];
-        if (start <= end) {
-            for (; start <= end; start++) {
-            dayRange.push(days[start].name);
-            }
-        } else {
-            for (; start <= 6; start++) {
-            dayRange.push(days[start].name);
-            }
-            for (i = 0; i <= end; i++) {
-            dayRange.push(days[i].name);
-            }
-        }
-        
-        newChamber.appointment = newChamber.appointment ? newChamber.appointment.length ? newChamber.appointment : [newChamber.appointment] : [];
-        newChamber.dayRange = newChamber.dayRange ? newChamber.dayRange.length ? newChamber.dayRange : [newChamber.dayRange] : [];
-        let chamber = new Chamber(newChamber);
-        chamber.id = chamber._id;
-        chamber = await Doctor.create(chamber);
-        return ok(res, "Successfully Saved", newChamber);
-    }catch(error){
-      return responseError(res, error.message , {"err": error});
-    }
-})
+router.post("/organization/chamber/", chamberController.addNewChamber)
 module.exports = router;
