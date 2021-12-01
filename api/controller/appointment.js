@@ -9,18 +9,46 @@ module.exports.getAllAppointment = async (req,res)=>{
 }
 
 module.exports.createNewAppointment = async (req,res,next)=>{
-    let query={}
-    query.doctor = req.body.doctor;
-    let appointment = await Appointment.find(query);
-        console.log(appointment.length);
-    if(appointment.length>40){
-        res.status(200).json({message:"His limit already exists"});
+    let { doctor, date, organization, user, chamber, time } = req.body;
+    if(!doctor || !date || !user || !chamber){
+        return res.json({
+            "statusCode": 400,
+            "success": false,
+            "message": "Doctor, user, date and chamber are required field"
+        });
     }else{
-        console.log("creating appointment")
-        let newAppointment = await Appointment.create({...req.body});
-        let appoint = await Appointment.findOne({_id:newAppointment._id}).populate('doctor').populate('organization').populate("user");
-        addAppointmentToDoctor(req.body.doctor,appoint._id);
-        addAppointmentToUser(req.body.user,appoint._id);
-        res.status(200).json({message:"success to create appoint",appointment:appoint});
+        date = moment(date).format("YYYY-MM-DD");
+        time = time ? moment(time).format('LT') : "";
+        let appointmentCount = await Appointment.countDocuments({chamber: chamber, doctor: doctor, date: date});
+        console.log(appointmentCount);
+        if(appointmentCount>=req.body.maxCount){
+            return res.json({
+                "count": appointmentCount,
+                "date": date,
+                "time": time
+            })
+        }
+        else{
+            let newAppointment = new Appointment({
+                date: date,
+                time: time,
+                organization: organization,
+                doctor: doctor,
+                user: user,
+                patientName: req.body.patientName,
+                patientEmail: req.body.patientEmail,
+                patientNumber: req.body.patientNumber,
+                chamber: chamber,
+                isActive: true,
+                isPaid: false,
+                status: "new",
+                charge: req.body.charge,
+            });
+            newAppointment.id = newAppointment._id;
+            newAppointment = await newAppointment.save();
+            return res.json({
+                appointment: newAppointment
+            });
+        }
     }
 }
