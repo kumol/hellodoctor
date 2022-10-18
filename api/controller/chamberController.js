@@ -1,4 +1,4 @@
-const { ErrorResponse, Ok, notModified, notFound } = require("../../helpers/httpResponse");
+const response = require("../../helpers/HttpResponse");
 const Chamber = require("../../models/chamber");
 
 module.exports = {
@@ -20,9 +20,9 @@ module.exports = {
             let chamber = new Chamber(newChamber);
             chamber.id = chamber._id;
             chamber = await Doctor.create(chamber);
-            return Ok(res, "Successfully Saved", newChamber);
+            return response.success(res, "Successfully Saved", newChamber);
         }catch(error){
-          return ErrorResponse(res, error.message , {"error": error});
+          return response.errorResponse(res, error.message , {"error": error});
         }
     },
     getChamber: async(req,res)=>{
@@ -30,9 +30,9 @@ module.exports = {
             let limit = req.query.limit && Number(req.query.limit) > 0? Number(req.query.limit) : 10;
             let page = req.query.page && Number(req.query.page)>=0 ? Number(req.query.page) : 1;
             let chamber = page == 0 || limit == 0 ? [] : await Chamber.find({}).skip(limit*(page-1)).limit(limit);
-            Ok(res, "Successfully Saved", chamber)
+            response.success(res, "Successfully Saved", chamber)
         }catch(error){
-            ErrorResponse(res, "Internal server error", error.message);
+            response.errorResponse(res, "Internal server error", error.message);
         }
     },
 
@@ -52,17 +52,17 @@ module.exports = {
 
             let modified = await Chamber.updateOne({id: req.params.id}, updateQuery),
                 updatedObj = modified.n ? await Chamber.findOne({id: req.params.id}, {_id: 0}).lean() : {};
-            return modified.n ? modified.nModified ? Ok(res, "Successfully Updated", updatedObj) : notModified(res, "Not modified", {}) : notFound(res, "No Record Found", {});
+            return modified.n ? modified.nModified ? response.success(res, "Successfully Updated", updatedObj) : response.notModified(res, "Not modified", {}) : response.notFound(res, "No Record Found", {});
         }catch(error){
-            ErrorResponse(res, "Internal server error", {"message": error.message});
+            response.errorResponse(res, "Internal server error", {"message": error.message});
         }
     },
     deleteChamber: async(req,res)=>{
         try{
             let removed = await Chamber.deleteOne({id: req.params.id});
-            return Ok(res, "Request Successful", {"msg": "Object deleted"});
+            return response.success(res, "Request Successful", {"msg": "Object deleted"});
         }catch(error){
-            ErrorResponse(res, "Internal server error", {"message": error.message});
+            response.errorResponse(res, "Internal server error", {"message": error.message});
         }
     }
 }

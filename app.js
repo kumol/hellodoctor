@@ -23,10 +23,10 @@ let doctorRouter = require("./api/doctor");
 let appointmentRouter = require("./api/appointment");
 const superAdminRouter = require("./api/route/admin/staticDataControl/staticDataControl");
 
-const port = process.env.PORT|| config.development.PORT;
+const port = process.env.PORT || config.development.PORT;
 app.listen(port,(err)=>{
     if(!err){
-        console.log(`app is running on port ${config.development.PORT}`);
+        console.log(`app is running on port ${port}`);
     }else{
         console.log("Return error");
     }
