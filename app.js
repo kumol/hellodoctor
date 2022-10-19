@@ -14,6 +14,8 @@ Sentry.init({ dsn: process.env.SENTRY_DSN, integrations: [
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 app.use(Sentry.Handlers.errorHandler());
+
+app.use('/uploads', express.static("uploads"));
 console.log(process.env.SENTRY_DSN)
 const cors = require("cors");
 var bodyParser = require('body-parser');
@@ -22,6 +24,7 @@ let organizationRouter = require("./api/organization");
 let doctorRouter = require("./api/doctor");
 let appointmentRouter = require("./api/appointment");
 const superAdminRouter = require("./api/route/admin/staticDataControl/staticDataControl");
+const globalRouter = require("./api/route/global");
 
 const port = process.env.PORT || config.development.PORT;
 app.listen(port,(err)=>{
@@ -43,5 +46,5 @@ app.use("/api/user",userRouter);
 app.use("/api/organization",organizationRouter);
 app.use("/api/doctor",doctorRouter);
 app.use("/api/appointment",appointmentRouter);
-
+app.use('/api/global', globalRouter);
 app.use("/api/admin/system",superAdminRouter);
